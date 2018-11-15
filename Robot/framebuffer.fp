@@ -76,7 +76,11 @@ void main()
 		for(int i = 0; i < 9; i++)
 			col += sampleTex[i] * kernel[i];
     
-		FragColor = vec4(col, 1.0);
+		FragColor = vec4(col,1.0);
+		/*
+		float tmp= (col.x+col.y+col.z)/3;
+		FragColor = vec4(tmp,tmp,tmp, 1.0);
+		*/
 	}
 	else if(mode == 4){ // 霧化，也是用相鄰的格子作權重
 		vec2 offsets[9] = vec2[](
@@ -400,7 +404,6 @@ void main()
 		p = 2.0 * p - 1.0;
 		p.x *= resolution.x / resolution.y;
 		p*=0.1;
-		//float time = 0.5;
 		float color = 0.0;
 		float d0 = (length(p));
 		vec2 q = mod(sin(p * 3.141592 * 2.0) - 0.5, 1.0) - 0.5;
@@ -411,10 +414,6 @@ void main()
 		float w2 = sin(-10.4 * dr * 3.141592*sin(d*9. - dr*w1*3.3 + w1*d0 + time*.3)) * 1. ;
 	
 		color = w1*1.0-w2*1.-d*d0;
-		//vec3 c = vec3(abs(cos(color + time)*2.));
-		//c.r = color * sin(time*10.0);
-
-		//FragColor /= vec4( vec3( -color, abs(color) * 0.5, cos( color + time * 2.0 ) * 0.75 ), 1.0 );
 		FragColor = mix(FragColor ,vec4( vec3( -color, abs(color) * 0.5, cos( color + time * 2.0 ) * 0.75 ), 1.0 ), 0.2);
 	}
 	else if(mode == 17){	//mid sin wave
@@ -424,64 +423,6 @@ void main()
 		dy += 11./ (200. * length(p - vec2(p.x, 0.0)));
 		FragColor *= vec4( (p.x + 0.2) * dy, 0.3 * dy, dy, 6.1 );
 
-	}
-	else if(mode == 18){	//clock
-		#define r1 0.8
-		#define r2 0.9
-		#define R1 0.75
-		#define R2 0.9
-		#define rr 0.01
-		#define RR 0.02
-		#define pi 3.1415926535897932384626433832795
-		#define pi30 0.10471975511965977461542144610932
-		vec2 pos=(2.0*gl_FragCoord.xy-resolution)/resolution.y;
-		float tick=floor(atan(pos.x,pos.y)/pi30+0.5);
-		float ang=tick*pi30;
-		float s=sin(ang),c=cos(ang);
-		mat2 m=mat2(c,s,-s,c);
-		vec2 p=m*pos;
-		float d,color;
-		float l=length(pos);
-		float d0=(l<R2)?abs(mod(abs(pos.x),0.01)-0.005)+abs(mod(abs(pos.y),0.01)-0.005):1.0;
-	
-		if(mod(tick,5.0)>0.5){
-			d=(p.y>r1&&p.y<r2)?abs(p.x):1.0;
-			//d=abs(p.x)+abs(p.y-r1);
-			//d=max(0.025-d,0.0);
-			//d=0.02-length(p-vec2(0.0,r1));
-			color=smoothstep(rr,0.0,d);
-		}
-		else {
-			d=(p.y>R1&&p.y<R2)?abs(p.x):1.0;
-			color=smoothstep(RR,0.0,d);
-		}
-		float t=time+3.0*3600.0+38.0*60.0-17.0;// time. Don't know what in the time uniform structure.
-		float h=t/3600.0;
-		float minit=mod(floor(t/60.0),60.0);
-		float sec=floor(mod(t,60.0));
-		float angh=mod(h,24.0)*pi/6.0;
-		float angm=minit*pi30;
-		float angs=sec*pi30;
-		c=cos(angh);s=sin(angh);
-		m=mat2(c,s,-s,c);
-		p=m*pos;
-		float dh=(p.y>-0.1&&p.y<0.65)?abs(p.x):1.0;
-		color=max(color,smoothstep(0.02,0.0,dh));
-	
-		c=cos(angm);s=sin(angm);
-		m=mat2(c,s,-s,c);
-		p=m*pos;
-		float dm=(p.y>-0.2&&p.y<0.70)?abs(p.x):1.0;
-		color=max(color,smoothstep(0.015,0.0,dm));
-		c=cos(angs);s=sin(angs);
-		m=mat2(c,s,-s,c);
-		p=m*pos;
-		float ds=(p.y>-0.3&&p.y<0.75)?abs(p.x):1.0;
-		float bk=0.5*smoothstep(0.01,0.00,d0);
-		color=max(color,max(bk,0.0));
-		color=max(color,smoothstep(0.01,0.0,ds));
-		FragColor *= vec4(vec3(color,color,bk+color),1.0);
-	
 	}
 	else if(mode == 19){ //shiny
 		
@@ -518,22 +459,6 @@ void main()
 		e = s.yzwx, 
 		f = min(o.x-s,e-o.x);
 		FragColor *= dot(clamp(f*r.y,0.,1.), 40.*(s-e)) * (s-.1) - f;
-	}
-	else if(mode == 21){ //minecraft
-		vec3 d = normalize(vec3((gl_FragCoord.xy - resolution.xy * .5) / resolution.x, .5));
-		vec3 p, c, f, g=d, o, y=vec3(1.0,3.0,0.0);
- 		o.y = 1.2*cos((o.x=0.3)*(o.z=time * 10.0));
-		o.x -= cos(time) + 3.0;
-
-		for( float i=.0; i<8.; i+=.01 ) {
-			f = fract(c = o += d*i*.01); 
-			p = floor( c )*.4;
-			if( cos(p.z) + sin(p.x) > ++p.y ) {
-	    		g = (f.y-.04*cos((c.x+c.z)*10.)>.7?y:f.x*y.yxz) / i;
-				break;
-			}
-		}
-		FragColor *= vec4(g,1.0);
 	}
 	else if (mode == 22) {
 		vec2 position = ( gl_FragCoord.xy / resolution.xy );

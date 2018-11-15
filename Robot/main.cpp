@@ -44,14 +44,14 @@ int main(int argc, char** argv){
 	glutAddMenuEntry("Fill", 1);
 	glutAddMenuEntry("Reverse", 2);
 	glutAddMenuEntry("Gray", 3);
-	glutAddMenuEntry("Shine", 4);
-	glutAddMenuEntry("Mirrow", 5);
 	glutAddMenuEntry("Toon", 6);
+	glutAddMenuEntry("Mirrow", 5);
+	glutAddMenuEntry("Shine", 4);
+	glutAddMenuEntry("RedBlock", 10);
+	glutAddMenuEntry("colorBlock", 11);
+	glutAddMenuEntry("Laser", 9);
 	glutAddMenuEntry("noise", 7);
 	glutAddMenuEntry("sinWaveNoise", 8);
-	glutAddMenuEntry("LaserNoise", 9);
-	glutAddMenuEntry("RedBlack", 10);
-	glutAddMenuEntry("11", 11);
 
 
 
@@ -64,15 +64,15 @@ int main(int argc, char** argv){
 	glutAddMenuEntry("Normal", 0);
 	glutAddMenuEntry("Inverse", 1);
 	glutAddMenuEntry("GrayScale", 2);
-	glutAddMenuEntry("Kernal effect", 3);
 	glutAddMenuEntry("Blur", 4);
+	glutAddMenuEntry("Kernal effect", 3);
 	glutAddMenuEntry("Edge detection", 5);
 	glutAddMenuEntry("Circle Pixel", 6);
 	glutAddMenuEntry("Emboss", 7);
+	glutAddMenuEntry("Water Wave", 11);
 	glutAddMenuEntry("Triangle Pixel", 8);
 	glutAddMenuEntry("Rectangular Pixel", 9);
 	glutAddMenuEntry("Sketch", 10);
-	glutAddMenuEntry("Water Wave", 11);
 	glutAddMenuEntry("lightning", 12);
 	glutAddMenuEntry("Snow", 13);
 	glutAddMenuEntry("RotatingRing", 14); // 2018/11/11new add

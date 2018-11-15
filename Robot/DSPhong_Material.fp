@@ -110,16 +110,16 @@ void main(void)
 		float sx = 0.3 * (p.x*p.x*87.0 - 1.7) * tan( 45.0 * p.y + 45. * pow(time/0.025, 0.06)*9.);
 		float dy = 9./ ( 423. * abs(p.y - sx));
 		dy += 30./ (11900. * length(p - vec2(p.x, 0.02)));
-		vFragColor = mix(vFragColor ,vec4( (p.x + 3.56) * dy, 0.8 * dy, dy, 1.1 ), 0.2);
+		vFragColor = mix(vFragColor ,vec4( 0.8 * dy, dy,(p.x + 3.56) * dy, 1.1 ), 0.2);
 	}
-	else if (mode == 10){
+	else if (mode == 10){//red block
 		vec3 color = vec3(0,0,0);
 		if(UV.x > sin(UV.x * 100. + time * 5.)) color = vec3(UV.x - UV.y/1.,0,0);
 		vFragColor = vec4(color, 4.);
 	
 	}
 
-	else if (mode == 11){
+	else if (mode == 11){ //color block
 		float pi = 3.14159265359;
 		vec2 position = UV;
 		float ang = atan(position.y, position.x);
