@@ -259,29 +259,31 @@ void main()
 		else if(a>-PI6 && a<PI6)
 			vn = area6;
       
-		vec4  color = texture2D(screenTexture, vn);
+		//vec4  color = texture2D(screenTexture, vn);
+		vec4  color = texture(screenTexture, vn);
 		FragColor = color;
 	}
 
 	else if(mode == 9){ // 方形馬賽克
 		vec4 color;
 		//float ratio = texSize.y/texSize.x;
-   
-		vec2 xy = vec2(TexCoords.x * texSize.x /** ratio */, TexCoords.y * texSize.y);
-   
+
+		/** ratio */
+		vec2 xy = vec2(TexCoords.x * texSize.x , TexCoords.y * texSize.y);
+		
 		vec2 xyMosaic = vec2(floor(xy.x / mosaicSize.x) * mosaicSize.x, floor(xy.y / mosaicSize.y) * mosaicSize.y );
          
    
 		
 		vec2 xyFloor = vec2(floor(mod(xy.x, mosaicSize.x)), floor(mod(xy.y, mosaicSize.y)));
                   
-		#if 0
+		//#if 0
 		if((xyFloor.x == 0 || xyFloor.y == 0))
 		{
-			color = vec4(1., 1., 1., 1.);
+			color = vec4(0., 0., 0., 1.);
 		}
 		else
-		#endif
+		//#endif
 		{
 			vec2 uvMosaic = vec2(xyMosaic.x / texSize.x, xyMosaic.y / texSize.y);
 			color = texture2D( screenTexture, uvMosaic );
@@ -318,8 +320,10 @@ void main()
 		
 		vec4 color=(sample0+sample1+sample2+sample3) / 4.0;
 		
-		vec3 endColor = fanshe.rgb+(fanshe.rgb*color.rgb)/(1.0-color.rgb);
+		//vec3 endColor = fanshe.rgb+(fanshe.rgb*color.rgb)/(1.0-color.rgb);
 		
+		vec3 endColor = fanshe.rgb + ( fanshe.rgb * color.rgb )/( 1.0 - color.rgb );
+
 		FragColor = vec4(endColor,0.0);
 
 
@@ -335,7 +339,7 @@ void main()
 
 	else if(mode ==12){ // 新增霧閃電特效
 		
-		vec2 position = (( TexCoords.xy / resolution.xy ) - 0.5);
+		vec2 position = (( gl_FragCoord.xy / resolution.xy ) - 0.5);
 		position.x *= resolution.x / resolution.y;
 
 		vec3 color = texture(screenTexture, TexCoords).rgb;
@@ -347,7 +351,7 @@ void main()
 		}
 
 
-		vec2 uv=(TexCoords.xy*2.-resolution.xy)/min(resolution.x,resolution.y); 
+		vec2 uv=(gl_FragCoord.xy*2.-resolution.xy)/min(resolution.x,resolution.y); 
 		vec3 finalColor=vec3(0);
 		float c=smoothstep(1.,0.3,clamp(uv.y*.3+.8,0.,.75));
 		c+=snow(uv,30.)*.3;
@@ -424,7 +428,25 @@ void main()
 		FragColor *= vec4( (p.x + 0.2) * dy, 0.3 * dy, dy, 6.1 );
 
 	}
-	else if(mode == 19){ //shiny
+	else if(mode == 18){ // 閃爍藍愛心
+		vec2 p = ( gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x,resolution.y);
+		vec3 destColor = vec3(0.0,0.9,1.3);
+		float f = 0.0;
+		float T = 3.0 * time+dot(p,p)*resolution.x*resolution.y;
+		for ( float i = 0.0; i < 12.0; i++){
+			T += 0.0131415926;
+			float c = 16.*pow(sin(T), 3.);//sin(time*3.0 + i * 0.0031415926) * 0.8;
+			float s = 13.*cos(T) - 5.*cos(2.*T) - 2.*cos(3.*T) - cos(4.0*T);
+			c = 0.05*c; s = -0.05*s;
+			f += 0.001/abs(length(p+vec2(c,s))-i/500000.)*(pow(i,2.0)/1000.0);
+			f += 0.001/abs(length(p+vec2(-c,s))-i/500000.)*(pow(i,2.0)/1000.0);
+		}
+	
+		FragColor = mix(FragColor, vec4(vec3(destColor*f*f*50000.),1.0), 0.2);
+	}
+	
+	
+	else if(mode == 19){ //閃耀夜店燈
 		
 		vec2 uv = 3.6*(2. * gl_FragCoord.xy - resolution) / resolution.y;
 		vec3 color = vec3(0);
@@ -449,7 +471,7 @@ void main()
 			color.rg += .010 / max(abs(rd.x*0.7), abs(rd.z*0.9));
 		}
 		color *= 0.4;
-		FragColor *= vec4(color, 1.);
+		FragColor = mix(FragColor, vec4(color, 1.), 0.4);
 	}
 	else if(mode == 20){ //half circle
 		vec2 r = resolution,
@@ -458,19 +480,43 @@ void main()
 		vec4 s = .1*cos(1.6*vec4(0,1,2,3) + time + o.y + sin(o.y) * sin(time)*2.),
 		e = s.yzwx, 
 		f = min(o.x-s,e-o.x);
-		FragColor *= dot(clamp(f*r.y,0.,1.), 40.*(s-e)) * (s-.1) - f;
+		FragColor += dot(clamp(f*r.y,0.,1.), 40.*(s-e)) * (s-.1) - f;
 	}
-	else if (mode == 22) {
+	else if(mode == 21){ //震動的圓形
+		// Visual parameters (for making things look pretty)
+		float initialDensity = 0.01;  	 	// Pattern starting density
+		float brightness = 0.5; 		// Maximum pattern brightness 
+		float blackLevel = 0.5; 		// Minimum pattern darkness 
+	
+		// Half the width and half the height gives the position of the center of the screen
+		vec2 screenCenter = (vec2(0.5,0.5)+sin(0.02*time)*vec2(0.5,0.0))*resolution; 		
+	
+		// The current pixel position should be given assuming the screen center is [0,0] 
+		vec2 position = gl_FragCoord.xy - screenCenter;		
+	
+		// Compute squares the current x and y pixel positions and call them x2 and y2
+		float x2 = position.x * position.x; 	// x squared
+		float y2 = position.y * position.y;	// y squared
+		
+		// Each pixel value is defined by sin(x2 + y2) 
+		// (Multiply the inside of the sin by the current time value to make it zoom in and out)
+		float pixelValue = sin(time*initialDensity*(x2 + y2)) * brightness + blackLevel;
+	
+		// For each pixel, set all its red, green, and blue channels with this technique (making things black and white) 
+		
+		FragColor += vec4(pixelValue*abs(sin(0.1*time+2.0)),pixelValue*abs(sin(0.1*time)),pixelValue*abs(sin(0.1*time+4.0)),1.0);
+	}
+	else if (mode == 22) { // 藍黃圓形
 		vec2 position = ( gl_FragCoord.xy / resolution.xy );
 		float color = 0.0;
 		color += sin( position.x * cos( time / 15.0 ) * 80.0 ) + cos( position.y * cos( time / 15.0 ) * 10.0 );
 		color += sin( position.y * sin( time / 10.0 ) * 40.0 ) + cos( position.x * sin( time / 25.0 ) * 40.0 );
 		color += sin( position.x * sin( time / 5.0 ) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 80.0 );
 		color *= sin( time / 10.0 ) * 0.5;
-		FragColor *= vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 0.7);
+		FragColor += vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 0.7);
 	}
 
-	else if (mode == 23) {
+	else if (mode == 23) { // 藍射線
 		vec2 uv = (gl_FragCoord.xy * 2.0 -  resolution.xy) / resolution.x;
 		uv *= rotate(time * 0.2); 
 		//time * 0.2
@@ -507,10 +553,15 @@ vec3 hsv2rgb(vec3 c)
 
 float snow(vec2 uv,float scale)
 {
-	float w=smoothstep(9.,0.,-uv.y*(scale/10.));if(w<.1)return 0.;
-	uv+=(time*aoinParam1)/scale;uv.y+=time*0./scale;uv.x+=sin(uv.y+time*.05)/scale;
-	uv*=scale;vec2 s=floor(uv),f=fract(uv),p;float k=3.,d;
-	p=.5+.35*sin(11.*fract(sin((s+p+scale)*mat2(7,3,6,5))*5.))-f;d=length(p);k=min(d,k);
+	float w = smoothstep( 9.,0., -uv.y*(scale/10.));
+	if(w<.1)return 0.;
+	uv+=(time*aoinParam1)/scale;
+	uv.y+=time*0./scale;
+	uv.x+=sin(uv.y+time*.05) / scale;
+	uv*=scale;
+	vec2 s=floor(uv),f=fract(uv),p;float k=3.,d;
+	p=.5+.35*sin(11.*fract(sin((s+p+scale)*mat2(7,3,6,5))*5.))-f;d=length(p);
+	k=min(d,k);
 	k=smoothstep(0.,k,sin(f.x+f.y)*0.01);
     return k*w;
 }

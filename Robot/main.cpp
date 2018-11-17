@@ -34,14 +34,15 @@ int main(int argc, char** argv){
 	//加入右鍵物件
 	glutAddMenuEntry("idle",0);
 	glutAddMenuEntry("walk",1);
-	glutAddMenuEntry("dance1", 2);
+	glutAddMenuEntry("star jump", 2);
 	glutAddMenuEntry("gangnam style", 3);
+	glutAddMenuEntry("??????", 4);
+	glutAddMenuEntry("layup", 5);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
 	ModeMenu = glutCreateMenu(ModeMenuEvents);//建立右鍵菜單
 	//加入右鍵物件
-	glutAddMenuEntry("Line",0);
-	glutAddMenuEntry("Fill", 1);
+	glutAddMenuEntry("Normal",0);
 	glutAddMenuEntry("Reverse", 2);
 	glutAddMenuEntry("Gray", 3);
 	glutAddMenuEntry("Toon", 6);
@@ -52,7 +53,7 @@ int main(int argc, char** argv){
 	glutAddMenuEntry("Laser", 9);
 	glutAddMenuEntry("noise", 7);
 	glutAddMenuEntry("sinWaveNoise", 8);
-
+	
 
 
 
@@ -64,46 +65,48 @@ int main(int argc, char** argv){
 	glutAddMenuEntry("Normal", 0);
 	glutAddMenuEntry("Inverse", 1);
 	glutAddMenuEntry("GrayScale", 2);
-	glutAddMenuEntry("Blur", 4);
 	glutAddMenuEntry("Kernal effect", 3);
 	glutAddMenuEntry("Edge detection", 5);
+	glutAddMenuEntry("Blur", 4);
 	glutAddMenuEntry("Circle Pixel", 6);
 	glutAddMenuEntry("Emboss", 7);
 	glutAddMenuEntry("Water Wave", 11);
 	glutAddMenuEntry("Triangle Pixel", 8);
 	glutAddMenuEntry("Rectangular Pixel", 9);
 	glutAddMenuEntry("Sketch", 10);
+	glutAddMenuEntry("Laser", 15);
+	glutAddMenuEntry("CosWave", 17);
+	glutAddMenuEntry("ShootingRay", 23);
+
+	glutAddMenuEntry("Gold&GreenIllusion", 16);
+	glutAddMenuEntry("ShinyBlueHeart", 18);
+	glutAddMenuEntry("ShinyNightParty", 19);
+	glutAddMenuEntry("HalfCircle", 20);
+	glutAddMenuEntry("VibratingCircle", 21);
+	glutAddMenuEntry("light spot", 22);
 	glutAddMenuEntry("lightning", 12);
 	glutAddMenuEntry("Snow", 13);
-	glutAddMenuEntry("RotatingRing", 14); // 2018/11/11new add
+	glutAddMenuEntry("RotatingRing", 14); 
 	
-	glutAddMenuEntry("Laser", 15);// 2018/11/11new add
-	glutAddMenuEntry("Gold&GreenIllusion", 16);
-	glutAddMenuEntry("Blue&PurpleWave", 17);
-	glutAddMenuEntry("Clock", 18);
-	glutAddMenuEntry("Shiny", 19);
-	glutAddMenuEntry("HalfCircle", 20);
-	glutAddMenuEntry("Minecraft", 21);
-	glutAddMenuEntry("22-light spot", 22);
-	glutAddMenuEntry("23", 23);
-	glutAddMenuEntry("24", 24);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 	BackgroundMenu = glutCreateMenu(BackgroundMenuEvents); // 2018/11/11new add
 	glutAddMenuEntry("Normal", 0);
+	glutAddMenuEntry("RotatingTriangle", 4);
+	glutAddMenuEntry("ShinyMolecule", 6);
+
+	glutAddMenuEntry("RunningLine", 3);
 	glutAddMenuEntry("Minecraft", 1);
 	glutAddMenuEntry("CircleIllusion", 2);
-	glutAddMenuEntry("RunningLine", 3);
-	glutAddMenuEntry("RotatingTriangle", 4);
 	glutAddMenuEntry("ColumnsWorld", 5);
-	glutAddMenuEntry("ShinyMolecule", 6);
 	glutAddMenuEntry("QuantumWorld", 7);
+	glutAddMenuEntry("LeafWorld", 8);
 
 	glutCreateMenu(menuEvents);//建立右鍵菜單，主菜單
 	//加入右鍵物件
 	glutAddSubMenu("action",ActionMenu);
-	glutAddSubMenu("mode",ModeMenu);
-	glutAddSubMenu("robot shader", ShaderMenu);
+	glutAddSubMenu("robot shader",ModeMenu);
+	glutAddSubMenu("frameBuffer shader", ShaderMenu);
 	glutAddSubMenu("background shader", BackgroundMenu);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
@@ -128,11 +131,37 @@ void ChangeSize(int w,int h){
 void Mouse(int button,int state,int x,int y){
 	if(button == 2) isFrame = false;
 }
-void idle(int dummy){
+void idle(int dummy) {
+
 	isFrame = true;
 	int out = 0;
 
-	if (action == GANGNAM) {
+	if (action == JUMP) {
+		if (isMotionSwitch == -1) {
+			resetObj(dummy);
+			updateObj5(out);
+			isMotionSwitch = JUMP;
+		}
+		else {
+			updateObj5(dummy);
+			out = dummy + 1;
+			if (out > 12) out = 1;
+		}
+	}
+
+	else if (action == GANGNAM2) {
+		if (isMotionSwitch == -1) {
+			resetObj(dummy);
+			updateObj4(out);
+			isMotionSwitch = GANGNAM2;
+		}
+		else {
+			updateObj4(dummy);
+			out = dummy + 1;
+			if (out > 12) out = 1;
+		}
+	}
+	else if (action == GANGNAM) {
 		if (isMotionSwitch == -1) { // isMotionSwitch == -1 時，代表上一秒是其他動作，要讓動作從頭開始
 			resetObj(dummy);// 讓動作從頭開始(至idle狀態)
 			updateObj3(out);// 接著，讓動作開始第一個狀態
@@ -143,7 +172,7 @@ void idle(int dummy){
 			out = dummy + 1;
 			if (out > 12) out = 1;
 		}
-		
+
 	}
 	else if (action == DANCE) {
 		if (isMotionSwitch == -1) {
@@ -156,9 +185,9 @@ void idle(int dummy){
 			out = dummy + 1;
 			if (out > 12) out = 1;
 		}
-		
+
 	}
-	else if(action == WALK){
+	else if (action == WALK) {
 		if (isMotionSwitch == -1) {
 			resetObj(dummy);
 			updateObj(out);
@@ -169,9 +198,9 @@ void idle(int dummy){
 			out = dummy + 1;
 			if (out > 12) out = 1;
 		}
-		
+
 	}
-	else if(action == IDLE){
+	else if (action == IDLE) {
 		if (isMotionSwitch == -1) {
 			isMotionSwitch = 0;
 		}
@@ -180,11 +209,11 @@ void idle(int dummy){
 
 	}
 	glutPostRedisplay();
-	
-	glutTimerFunc (150, idle, out); 
+
+	glutTimerFunc(150, idle, out);
 }
-void resetObj(int f){
-	for(int i = 0 ; i < PARTSNUM;i++){
+void resetObj(int f) {
+	for (int i = 0; i < PARTSNUM; i++) {
 		angles[i] = 0.0f;
 		zangles[i] = 0.0f;
 		yangles[i] = 0.0f;
@@ -193,9 +222,10 @@ void resetObj(int f){
 	//zangles[6] = -10;
 	//zangles[12] = 10;
 	//zangles[15] = -10;
+	position = 0;
 }
-void updateObj(int frame){
-	switch(frame){
+void updateObj(int frame) {
+	switch (frame) {
 	case 0:
 
 		//左手
@@ -211,9 +241,9 @@ void updateObj(int frame){
 	case 1:
 	case 2:
 	case 3:
-		angles[1] +=10;//左上手臂先往後
+		angles[1] += 10;//左上手臂先往後
 		angles[6] -= 10;//右上手臂先往前
-		angles[12] -=15;//左大腿先往前
+		angles[12] -= 15;//左大腿先往前
 		angles[15] += 15;//右大腿先往後
 		angles[16] -= 15;
 		position += 0.1;//骨盆以上向正y軸移動
@@ -221,7 +251,7 @@ void updateObj(int frame){
 	case 4:
 	case 5:
 	case 6:
-		angles[1] -=10;
+		angles[1] -= 10;
 		angles[6] += 10;
 		angles[12] += 15;//左大腿往後
 		angles[15] -= 15;//右大腿往前
@@ -232,7 +262,7 @@ void updateObj(int frame){
 	case 7:
 	case 8:
 	case 9:
-		angles[1] -=10;
+		angles[1] -= 10;
 		angles[6] += 10;
 		angles[12] += 15;
 		angles[15] -= 15;
@@ -243,12 +273,12 @@ void updateObj(int frame){
 	case 10:
 	case 11:
 	case 12:
-		angles[1] +=10;
+		angles[1] += 10;
 		angles[6] -= 10;
 		angles[12] -= 15;
 		angles[15] += 15;
 		angles[13] += 15;//小腿後彎
-		
+
 		position -= 0.1;
 		break;
 	}
@@ -264,11 +294,11 @@ void updateObj2(int frame) {
 
 		//左手
 		//angles[2] = -45;//前臂前彎
-						//右手
+		//右手
 
-						//腿
+		//腿
 		angles[13] = 30;//小腿後彎	
-		angles[16] = 30;				
+		angles[16] = 30;
 		//angles[13] = 90;
 
 		break;
@@ -316,7 +346,7 @@ void updateObj3(int frame) {
 	case 0:
 		angles[1] = -45;//左上手臂前彎(負值)
 		angles[6] = -50;//右上手臂前彎
-		//angles[2] = -45;//雙前臂前彎
+						//angles[2] = -45;//雙前臂前彎
 		yangles[1] = -90;//左上手臂內旋
 		yangles[6] = 90;//右上手臂內旋
 
@@ -378,6 +408,160 @@ void updateObj3(int frame) {
 		angles[15] += 6;
 		angles[16] -= 8;
 		position -= 0.1;
+		break;
+	}
+}
+
+void updateObj4(int frame) {
+	switch (frame) {
+	case 0:
+		//angles負責x軸(前-後+)旋轉
+		//yangles負責y軸(順時鐘-逆時鐘+(以機器人本身的))旋轉
+		//zangles負責z軸(順時鐘+逆時鐘-(以機器人本身的))旋轉
+		//1,6 : 上手臂
+		//2,7 : 下手臂
+		//3,8 : 手掌
+		//12,15 : 大腿
+		//13,16 : 小腿
+		//14,17 : 腳掌
+		//5 : 頭顱 //0 : 身體核心(使用angle變數) //11 : 腰部
+
+
+		//頭
+		zangles[5] = -60;
+		yangles[5] = -90;
+
+
+		//手
+		yangles[1] = -90;
+		yangles[6] = 90;
+		zangles[1] = 50;
+		zangles[6] = -50;
+
+		angles[2] = -70;
+		angles[7] = -70;
+
+		zangles[3] = 30;
+		zangles[8] = -30;
+
+		//腳
+		angles[14] = 60;
+		angles[17] = 60;
+		break;
+	case 1:
+	case 2:
+	case 3:
+
+		zangles[12] += 15; //左大腿
+		zangles[13] += 10; //左小腿
+
+		zangles[0] += 3; //右傾
+		position += 0.1;//骨盆以上向正y軸移動
+		break;
+	case 4:
+	case 5:
+	case 6:
+
+
+		zangles[12] -= 15;
+		zangles[13] -= 10;
+
+
+
+
+		zangles[0] -= 3;
+		position -= 0.1;
+		break;
+	case 7:
+	case 8:
+	case 9:
+
+		zangles[15] -= 15;
+		zangles[16] -= 10;
+
+
+		zangles[0] -= 3;
+		position += 0.1;
+		break;
+	case 10:
+	case 11:
+	case 12:
+
+
+		zangles[15] += 15;
+		zangles[16] += 10;
+
+
+		zangles[0] += 3;
+		position -= 0.1;
+		break;
+	}
+}
+
+void updateObj5(int frame) {
+	switch (frame) {
+	case 0:
+		//angles負責x軸(前-後+)旋轉
+		//yangles負責y軸(順時鐘-逆時鐘+(以機器人本身的))旋轉
+		//zangles負責z軸(順時鐘+逆時鐘-(以機器人本身的))旋轉
+		//1,6 : 上手臂
+		//2,7 : 下手臂
+		//3,8 : 手掌
+		//12,15 : 大腿
+		//13,16 : 小腿
+		//14,17 : 腳掌
+		//5 : 頭顱 //0 : 身體核心(使用angle變數) //11 : 腰部
+
+		angles[2] = 30;
+		angles[7] = 30;
+
+
+		break;
+	case 1:
+	case 2:
+	case 3:
+
+		angles[12] -= 30;
+		angles[13] += 30;
+		angles[16] += 30;
+
+		angles[6] += 10;
+		angles[7] -= 25;
+
+		yangles[0] += 15;
+		position -= 0.1;//骨盆以上向正y軸移動
+		break;
+	case 4:
+	case 5:
+	case 6:
+
+		angles[12] += 30;
+		angles[13] -= 30;
+		angles[16] -= 30;
+
+		angles[6] -= 10;
+		angles[7] += 25;
+
+		angles[1] -= 60;
+
+		yangles[0] -= 15;
+		position += 2.0;
+		break;
+	case 7:
+	case 8:
+	case 9:
+
+
+
+		position += 2.0;
+		break;
+	case 10:
+	case 11:
+	case 12:
+
+		angles[1] += 60;
+
+		position -= 3.9;
 		break;
 	}
 }
@@ -722,7 +906,7 @@ void Obj2Buffer(){
 	load2Buffer("Obj/ilefthand2.obj",3);//手
 	load2Buffer("Obj/ileftshoulder2.obj",4);//肩膀
 	
-	load2Buffer("Obj/ihead.obj",5);
+	load2Buffer("Obj/ihead4.obj",5);
 
 	load2Buffer("Obj/irightu3.obj",6);
 	load2Buffer("Obj/irightd2.obj",7);
@@ -791,77 +975,88 @@ void Obj2Buffer(){
 
 }
 
-void updateModels(){
+void updateModels() {
 	mat4 Rotatation[PARTSNUM];
 	mat4 Translation[PARTSNUM];
-	for(int i = 0 ; i < PARTSNUM;i++){
+	for (int i = 0; i < PARTSNUM; i++) {
 		Models[i] = mat4(1.0f);
 		Rotatation[i] = mat4(1.0f);
-		Translation[i] = mat4(1.0f); 
+		Translation[i] = mat4(1.0f);
 	}
-	float r,pitch,yaw,roll;
-	float alpha, beta ,gamma; // alpha為前後擺動(x軸),beta為以y軸旋轉,gamma為水平擺動(z軸)
+	float r, pitch, yaw, roll;
+	float alpha, beta, gamma; // alpha為前後擺動(x軸),beta為以y軸旋轉,gamma為水平擺動(z軸)
 
-	//Body
-	beta = angle; // angle 改變的是雙腳以上身體的角度(左右轉動)
-	Rotatation[0] = rotate(beta,0,1,0);// 以y軸為旋轉軸轉動beta度(beta在rotate函式中會轉為弧度)
-	Translation[0] = translate(0,2.9+position,0);
-	Models[0] = Translation[0]*Rotatation[0];//Models[0]儲存著身體的世界座標矩陣乘積
+							  //Body
+	alpha = angles[0];
+	//beta = angle; // angle 改變的是雙腳以上身體的角度(左右轉動)
+	beta = yangles[0];
+	gamma = zangles[0];
+	Rotatation[0] = rotate(beta, 0, 1, 0)*rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1);// 以y軸為旋轉軸轉動beta度(beta在rotate函式中會轉為弧度)
+	Translation[0] = translate(0, 2.9 + position, 0);
+	Models[0] = Translation[0] * Rotatation[0];//Models[0]儲存著身體的世界座標矩陣乘積
 
-	//左手=======================================================
-	//左上手臂
-	yaw = DOR(beta);r = 3.7;
+											   //左手=======================================================
+											   //左上手臂
+	yaw = DOR(beta); r = 3.7;
 	alpha = angles[1]; // angles[1]為肩膀與身體間的關節
 	gamma = zangles[1]; // 可以改變gamma值讓鋼彈的手臂向左右平舉， gamma = 50 , 鋼彈變成T字形
 	beta = yangles[1]; //轉動手臂
-	Rotatation[1] = rotate(alpha,1,0,0)*rotate(gamma,0,0,1)*rotate(beta,0,1,0);//向前旋轉*向右旋轉
-	//Translation[1] = translate(2.7, 5.8, -0.25);//ileftu7
+	Rotatation[1] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);//向前旋轉*向右旋轉
+																						//Translation[1] = translate(2.7, 5.8, -0.25);//ileftu7
 	Translation[1] = translate(2.7, 6.4, -0.25);
 	//Translation[1] = translate(0, 0, 0);
 
-	Models[1] = Models[0]*Translation[1]*Rotatation[1];//除了手臂本身的世界座標矩陣，由於身體轉動手臂會跟著，所以身體矩陣也要乘進去
-	
-	//左肩膀
-	Rotatation[4] = rotate(alpha,1,0,0)*rotate(gamma,0,0,1);//向前旋轉*向右旋轉
-	//Translation[4] =translate(3.7,1,-0.5);//位移到左上手臂處
+	Models[1] = Models[0] * Translation[1] * Rotatation[1];//除了手臂本身的世界座標矩陣，由於身體轉動手臂會跟著，所以身體矩陣也要乘進去
+
+														   //左肩膀
+	Rotatation[4] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1);//向前旋轉*向右旋轉
+																  //Translation[4] =translate(3.7,1,-0.5);//位移到左上手臂處
 	Translation[4] = translate(2.7, 6.3, 0);
 	//Models[4] =Models[0]*Translation[1]*Rotatation[1];//左肩膀矩陣和左上手臂矩陣相同
 	Models[4] = Models[0] * Translation[4] * Rotatation[4];
 
-	
+
 
 
 	//左下手臂
-	pitch = DOR(alpha);r = 3;//pitch掌管手臂的前後擺動角度
+	pitch = DOR(alpha); r = 3;//pitch掌管手臂的前後擺動角度
 	roll = DOR(gamma);//roll掌管手臂的平舉角度
-	static int i=0;
-	i+=5;
-	alpha = angles[2]-20;//左下手臂向前彎20度
+	static int i = 0;
+	i += 5;
+	//alpha = angles[2]-20;//左下手臂向前彎20度
+	alpha = angles[2];
+	beta = yangles[2];
+	gamma = zangles[2];
 	//上手臂+下手臂向前旋轉*向右旋轉
-	Rotatation[2] = rotate(alpha,1,0,0);
+	Rotatation[2] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//延x軸位移以上手臂為半徑的圓周長:translate(0,r*cos,r*sin)
 	//延z軸位移以上手臂為半徑角度:translate(r*sin,-rcos,0)
 	//Translation[2] = translate(0,-3,0);
 	Translation[2] = translate(0.3, -2.4, 0);
 
-	Models[2] = Models[1]*Translation[2]*Rotatation[2];//除的自己本身的移動，也要加乘上手臂(上前舉時，下也跟著向前)
-	
-	//左手手掌
+	Models[2] = Models[1] * Translation[2] * Rotatation[2];//除的自己本身的移動，也要加乘上手臂(上前舉時，下也跟著向前)
+
+														   //左手手掌
 	pitch = DOR(alpha);
 	//b = DOR(angles[2]);
 	roll = DOR(gamma);
 	//手掌角度與下手臂相同
 	//Rotatation[3] = Rotatation[2];
 	//延x軸位移以上手臂為半徑的圓周長:translate(0,r*cos,r*sin) ,角度為上手臂+下手臂
-	Translation[3] = translate(0.75,-2,0.5);
+	alpha = angles[3];
+	gamma = zangles[3];
+	beta = yangles[3];
+	Translation[3] = translate(0.75, -2, 0.5);
+	Rotatation[3] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//Translation[3] = translate(0, 0, 0);
-	Models[3] = Models[2]*Translation[3]*Rotatation[3];//因為已先乘上(繼承)下手臂的矩陣(擁有下手臂的角度)，所以不用更改rotation矩陣，若想讓手旋轉，可以更改Rotation[3]
-	//============================================================
-	//頭==========================================================
+	Models[3] = Models[2] * Translation[3] * Rotatation[3];//因為已先乘上(繼承)下手臂的矩陣(擁有下手臂的角度)，所以不用更改rotation矩陣，若想讓手旋轉，可以更改Rotation[3]
+														   //============================================================
+														   //頭==========================================================
 	alpha = angles[5] + 0;
-	Translation[5] = translate(0,0.0,0.0);// 改變 : initial z = -0.5
-	Rotatation[5] = rotate(alpha, 0, 1, 0);
-	Models[5] = Models[0]*Translation[5]*Rotatation[5];
+	beta = yangles[5];
+	Translation[5] = translate(-0.1, 8.2, 0.3);// 改變 : initial z = -0.5
+	Rotatation[5] = rotate(alpha, 1, 0, 0)*rotate(beta, 0, 1, 0);
+	Models[5] = Models[0] * Translation[5] * Rotatation[5];
 	//============================================================
 	//右手=========================================================
 	//右上手臂
@@ -869,65 +1064,72 @@ void updateModels(){
 	//alpha = angles[6] = -angles[1]; 
 	//beta = yangles[6] = -yangles[1];
 	gamma = zangles[6];
-	alpha = angles[6]; 
+	alpha = angles[6];
 	beta = yangles[6];
-	Rotatation[6] = rotate(alpha,1,0,0)*rotate(gamma,0,0,1)*rotate(beta,0,1,0);
+	Rotatation[6] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//Translation[6] = translate(-2.9, 5.8, -0.25); // irightu2
 	Translation[6] = translate(-2.9, 6.4, -0.25);
-	Models[6] = Models[0]*Translation[6]*Rotatation[6];
+	Models[6] = Models[0] * Translation[6] * Rotatation[6];
 
 	//右肩膀
-	Rotatation[9] = rotate(alpha,1,0,0)*rotate(gamma,0,0,1);
+	Rotatation[9] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1);
 	Translation[9] = translate(-2.9, 6.3, 0);
-	Models[9] = Models[0]*Translation[9]*Rotatation[9];
+	Models[9] = Models[0] * Translation[9] * Rotatation[9];
 
 	//右下手臂
-	angles[7] = angles[2];
-	pitch = DOR(alpha);r = -3;
+	//angles[7] = angles[2];
+	pitch = DOR(alpha); r = -3;
 	roll = DOR(gamma);
-	alpha = angles[7]-20;
-	Rotatation[7] = rotate(alpha,1,0,0);
+	//alpha = angles[7]-20;
+	alpha = angles[7];
+	beta = yangles[7];
+	gamma = zangles[7];
+	Rotatation[7] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//Translation[7] = translate(0,-3,0);
 	Translation[7] = translate(-0.3, -2.4, 0);
-	Models[7] = Models[6]*Translation[7]*Rotatation[7];
+	Models[7] = Models[6] * Translation[7] * Rotatation[7];
 
 	//右手掌
 	pitch = DOR(alpha);
 	//b = DOR(angles[7]);
 	roll = DOR(gamma);
 	//Translation[8] =translate(0,-6,0);
+	alpha = angles[8];
+	gamma = zangles[8];
+	beta = yangles[8];
+	Rotatation[8] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	Translation[8] = translate(-0.75, -2.5, 1.5);
-	Models[8] = Models[7]*Translation[8]*Rotatation[8];
+	Models[8] = Models[7] * Translation[8] * Rotatation[8];
 	//=============================================================
 	//back&DBody===================================================
 	//背包
-	Translation[10] =translate(0,2,-4.5);
-	Models[10] = Models[0]*Translation[10]*Rotatation[10];
+	Translation[10] = translate(0, 2, -4.5);
+	Models[10] = Models[0] * Translation[10] * Rotatation[10];
 
 	//骨盆
-	Translation[11] =translate(0,0,0); // -5.3
-	Models[11] = Models[0]*Translation[11]*Rotatation[11];
+	Translation[11] = translate(0, 0, 0); // -5.3
+	Models[11] = Models[0] * Translation[11] * Rotatation[11];
 	//=============================================================
 	//左腳
 	//左大腿
 	alpha = angles[12]; gamma = zangles[12]; beta = yangles[12];
-	Rotatation[12] = rotate(alpha,1,0,0)*rotate(gamma,0,0,1)*rotate(beta,0,1,0);
+	Rotatation[12] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//Translation[12] =translate(1.8,-4.5,0);
 	//Translation[12] = translate(1.25, 3.7, 0.4); // 做動作會和骨盆脫節
 	Translation[12] = translate(1.25, 0.8, 0.4);
-	Models[12] = Models[11]*Translation[12]*Rotatation[12];
+	Models[12] = Models[11] * Translation[12] * Rotatation[12];
 
 	//左小腿
-	pitch = DOR(alpha);r = -7;
+	pitch = DOR(alpha); r = -7;
 	roll = DOR(gamma);
-	alpha = angles[13] + 0;
+	alpha = angles[13] + 0; gamma = zangles[13]; beta = yangles[13];
 	//alpha = angles[13]+angles[12];//將繼承的東西融進translate and rotate之中
 	//Translation[13] = translate(-r*sin(roll),r*cos(pitch),r*sin(pitch))*Translation[12];
 	//Rotatation[13] = rotate(alpha,1,0,0) * rotate(gamma,0,0,1);
 	//Models[13] = Translation[13]*Rotatation[13]*Models[13];
 	Translation[13] = translate(1, -5, -0.36);//self
-	//Translation[13] = translate(0, 0, 0);
-	Rotatation[13] = rotate(alpha, 1, 0, 0);
+											  //Translation[13] = translate(0, 0, 0);
+	Rotatation[13] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	Models[13] = Models[12] * Translation[13] * Rotatation[13];
 
 
@@ -952,23 +1154,27 @@ void updateModels(){
 	alpha = angles[15];
 	gamma = zangles[15];
 	beta = yangles[15];
-	Rotatation[15] = rotate(alpha ,1,0,0)*rotate(gamma ,0,0,1)*rotate(beta,0,1,0);
+	Rotatation[15] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	//Translation[15] =translate(-1.8,-4.5,0);
 	//Translation[15] = translate(-1.5, 3.7, 0.4);
 	Translation[15] = translate(-1.5, 0.8, 0.4);
-	Models[15] = Models[11]*Translation[15]*Rotatation[15];
+	Models[15] = Models[11] * Translation[15] * Rotatation[15];
 
 	//angles[16] = angles[13];
-	pitch = DOR(alpha);r = -7;
+	pitch = DOR(alpha); r = -7;
 	roll = DOR(gamma);
+
+
 	alpha = angles[16] + 0;
+	gamma = zangles[16];
+	beta = yangles[16];
 	//alpha = angles[16]+angles[15];
 	//Rotatation[16] = rotate(alpha,1,0,0) * rotate(gamma, 0, 0, 1);
 	//Translation[16] = translate(-r*sin(roll),r*cos(pitch),r*sin(pitch))*Translation[15];
 	//Models[16] = Translation[16]*Rotatation[16]*Models[16];
 	//Translation[16] = translate(0, -7.5, 0);
 	Translation[16] = translate(-1, -5, -0.36);
-	Rotatation[16] = rotate(alpha, 1, 0, 0);
+	Rotatation[16] = rotate(alpha, 1, 0, 0)*rotate(gamma, 0, 0, 1)*rotate(beta, 0, 1, 0);
 	Models[16] = Models[15] * Translation[16] * Rotatation[16];
 
 
@@ -987,6 +1193,7 @@ void updateModels(){
 	Models[17] = Models[16] * Translation[17] * Rotatation[17];
 	//=============================================================
 }
+
 
 void load2Buffer(char* obj,int i){
 	std::vector<vec3> vertices;
@@ -1092,28 +1299,61 @@ void Keyboard(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 void menuEvents(int option){}
-void ActionMenuEvents(int option){
+void ActionMenuEvents(int option) {
 
 	if (isMotionSwitch != option) {
 		isMotionSwitch = -1;
 	}
 
-	switch(option){
-	
+	switch (option) {
+
 	case 0:
 		action = IDLE;
 		break;
 	case 1:
-		
 		action = WALK;
 		break;
 	case 2:
-		
 		action = DANCE;
 		break;
 	case 3:
-		
 		action = GANGNAM;
+		break;
+	case 4:
+		action = GANGNAM2;
+		break;
+	case 5:
+		action = JUMP;
+		break;
+	case 6:
+		action = WALK;
+		break;
+	case 7:
+		action = DANCE;
+		break;
+	case 8:
+		action = GANGNAM;
+		break;
+	case 9:
+		action = GANGNAM2;
+		break;
+	case 10:
+		action = IDLE;
+		break;
+	case 11:
+		action = WALK;
+		break;
+	case 12:
+		action = DANCE;
+		break;
+	case 13:
+		action = GANGNAM;
+		break;
+	case 14:
+		action = GANGNAM2;
+		break;
+	case 15:
+		action = GANGNAM2;
 		break;
 	}
 }

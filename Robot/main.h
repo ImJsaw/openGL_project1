@@ -55,6 +55,8 @@ mat4 rotate(float angle,float x,float y,float z);
 void Obj2Buffer();
 void load2Buffer( char* obj,int);
 
+void updateObj5(int);
+void updateObj4(int);
 void updateObj3(int); // new added gangnam function
 void updateObj2(int); // new added dance function
 void updateObj(int);
@@ -189,6 +191,9 @@ GLuint cubemapTexture;
 #define rightHand 1
 #define leftFoot 2
 #define rightFoot 3
+
+#define JUMP 5
+#define GANGNAM2 4
 #define GANGNAM 3 // new add gangnam keyword
 #define DANCE 2 // new add dance keyword
 #define WALK 1
